@@ -1,0 +1,44 @@
+# Usage:
+#
+#  dim_mkpos_from_freq1 NumberofRelaxedAtoms
+#
+#  e.g. "dim_mkpos_from_freq1 2" means calculate the vibrational normal 
+#  modes of the first two atoms. Default value is 0. 
+if [ -n "$1" ]
+then
+    atom=$1
+else
+    atom=0
+fi
+sum=`awk '/NIONS =/{print $12}' ./OUTCAR`
+sum_plus_1=$((sum+1))
+grep "33 f/i" OUTCAR -A $sum_plus_1 >freq33
+modemake.py freq33 -0.1
+mkdir dim
+cp ../INCAR-dim ./dim/INCAR
+cp ../KPOINTS-dim ./dim/KPOINTS
+cp ./POTCAR ./dim
+cp ../script-dim ./dim
+cp ../script-freq2 ./dim
+cp ./MODECAR ./dim
+# generate POSCAR
+cd dim
+cp ../CONTCAR POS
+line=`grep -n Direct POS | tr ":" "\n" | head -n 1`
+selective=`grep -n 'Selective dynamics' POS | wc -l`
+if [ $selective -eq 0 ]
+then
+    head -n $(($line-1)) POS > POSCAR
+    echo "Selective dynamics" >> POSCAR
+    echo "Direct" >> POSCAR
+else
+    head -n $line POS >> POSCAR
+fi
+end=$(($line+$atom))
+head -n $end POS | tail -n $atom | awk '{print $1,$2,$3," F F F"}' >> POSCAR
+#sum=`awk '/NIONS =/{print $12}' ../OUTCAR`
+end2=$(($line+$sum))
+sum=$(($sum-$atom))
+head -n $end2 POS | tail -n $sum | awk '{print $1,$2,$3," T T T"}' >> POSCAR
+rm POS
+qsub script-dim

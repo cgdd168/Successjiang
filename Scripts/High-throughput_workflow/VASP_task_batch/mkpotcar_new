@@ -1,0 +1,167 @@
+#!/bin/bash
+# This script is used to automatically create pseudo potential files according to the  recommendations of VASP official
+
+potpath=/data/home/jiangcg/POTCAR/PBE/
+filename=/POTCAR
+
+rm -rf POTCAR
+
+if [ ! -f  $(pwd)/POSCAR ]
+then
+array_pot=(`ls | head -n 1 POSCAR1`)
+
+else
+array_pot=(`ls | head -n 1 POSCAR`)
+
+fi
+
+for arg in ${array_pot[*]}
+do
+	if [ $arg == Li ]
+	then
+		cat $potpath$arg'_sv'$filename >> POTCAR
+	elif [ $arg == Na ]
+	then
+            	cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == K ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Ca ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Sc ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+	elif [ $arg == Ti ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == V ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Cr ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == Mn ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == Ga ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Ge ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Rb ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Sr ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Y ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Zr ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Nb ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Mo ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Tc ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == Ru ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == Rh ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == In ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Sn ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Cs ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Ba ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Pr ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Nd ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Pm ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Sm ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Eu ]
+        then
+                cat $potpath$arg'_2'$filename >> POTCAR
+        elif [ $arg == Gd ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Tb ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Dy ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Ho ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Er ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Tm ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Yb ]
+        then
+                cat $potpath$arg'_2'$filename >> POTCAR
+        elif [ $arg == Lu ]
+        then
+                cat $potpath$arg'_3'$filename >> POTCAR
+        elif [ $arg == Hf ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == Ta ]
+        then
+                cat $potpath$arg'_pv'$filename >> POTCAR
+        elif [ $arg == W ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Tl ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Pb ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Bi ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Po ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == At ]
+        then
+                cat $potpath$arg'_d'$filename >> POTCAR
+        elif [ $arg == Fr ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        elif [ $arg == Ra ]
+        then
+                cat $potpath$arg'_sv'$filename >> POTCAR
+        else
+		cat $potpath$arg$filename >> POTCAR
+	fi
+	done
+
+grep TITEL POTCAR
+

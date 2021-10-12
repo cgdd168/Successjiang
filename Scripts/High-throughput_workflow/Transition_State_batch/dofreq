@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+#Usage:
+#	dofreq X(NumberofRelaxedAtoms)
+#	e.g. "dofreq 2" ，$1即2，缺省值为1000  
+#	输入的原子数$atom
+   
+mkdir freq
+cd freq
+cp ../POTCAR .
+cp ../KPOINTS .
+if [ -f ../vdw_kernel.bindat ]
+then
+    cp ../vdw_kernel.bindat .
+fi
+cp /public/home/zhasj/files/INCAR_freq .
+mv INCAR_freq INCAR
+
+# generate POSCAR
+if [ -n "$1" ]
+then
+	atom=$1
+else
+    atom=1000
+fi
+
+cp ../CONTCAR POS
+line=`grep -n Direct POS | tr ":" "\n" | head -n 1` #获得“8:Direct|8 \n Direct|8”
+selective=`grep -n 'Selective dynamics' POS | wc -l`
+if [ $selective -eq 0 ]
+then
+    head -n $(($line-1)) POS > POSCAR	#将POS中的前$line-1行写入到POSCAR
+    echo "Selective dynamics" >> POSCAR
+    echo "Direct" >> POSCAR
+else
+    head -n $line POS >> POSCAR
+fi
+
+#end=`wc -l POS | tr " " "\n" | head -n 1` #统计POS行数|分行|打印出行数
+end=$(($line+$atom))
+head -n $end POS | tail -n $atom | awk '{print $1,$2,$3," F F F"}' >> POSCAR   #将前8+64行打印出来 | 取后面64行的原子 | 利用awk在后面加上是否弛豫
+sum=`awk '/NIONS =/{print $12}' ../OUTCAR | tr " " "\n" | head -n 1`
+end2=$(($line+$sum))
+fixatom=$(($sum-$atom))
+head -n $end2 POS | tail -n $fixatom | awk '{print $1,$2,$3," T T T"}' >> POSCAR
+rm POS
+
+q

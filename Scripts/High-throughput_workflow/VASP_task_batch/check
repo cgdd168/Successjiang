@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo -------------POTCAR-------------
+grep TITEL POTCAR
+echo -------------POSCAR-------------
+head -n 8 POSCAR | tail -n 3
+echo -------------KPOINTS-------------
+head -n 4 KPOINTS | tail -n 2
+echo -------------INCAR--------------
+grep NSW INCAR | sed '/#/d'
+grep -w "EDIFFG" INCAR | sed '/#/d'
+grep -w "EDIFF" INCAR | sed '/#/d'
+grep -w "ISPIN" INCAR | sed '/#/d'
+grep -w "LVHAR" INCAR | sed '/#/d'
+grep IBRION INCAR | sed '/#/d'
+grep LDAU INCAR | sed '/#/d'
+#grep LDAUU INCAR 
+grep MAGMOM INCAR | sed '/#/d'
+echo -------------script--------------
+grep -m 1 TYPE1 script
+grep -m 1 TYPE2 script

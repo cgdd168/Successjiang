@@ -1,0 +1,11 @@
+sum=`awk '/NIONS =/{print $12}' ./OUTCAR`
+sum_plus_1=$((sum+1))
+grep "33 f/i" OUTCAR -A $sum_plus_1 >freq33
+modemake.py freq33 -0.1
+mkdir dim
+cp ~/INCAR_template/dim/INCAR ./dim
+cp ./KPOINTS ./dim
+cp ./POTCAR ./dim
+cp ./POSCAR ./dim
+cp ~/INCAR_template/dim/script ./dim
+cp ./MODECAR ./dim

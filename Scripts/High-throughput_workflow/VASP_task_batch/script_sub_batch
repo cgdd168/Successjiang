@@ -1,0 +1,73 @@
+#!/bin/bash
+#File Name    : script_batch
+#Author       : Jiangcg
+#Mail         : successjiang@tju.edu.cn
+#Create Time  : 2021-06-07 13:34
+#Description  : This script is used to batch submit VASP calculation tasks for all sub files in the working folder in the single
+#               application PBS queue application.Please prepare the necessary submission documents (i.e. INCAR, KPOINTS, POSCAR, POTCAR) in each sub folder
+#Usage        : qsub script_batch
+
+#PBS -N node1 
+#PBS -l nodes=1:ppn=40
+#PBS -l walltime=3600:00:00
+#PBS -j oe
+#PBS -q batch
+
+subfolders=$(ls $PBS_O_WORKDIR)
+
+for folder in ${subfolders}
+do
+  if [ -d "$PBS_O_WORKDIR/$folder" ];then
+    cd $PBS_O_WORKDIR/$folder
+    # parameters
+    VER=5.4.4    # version option   : 5.4.1 5.4.4
+    TYPE1=org    # type1 option     : org beef vtst beefvtst
+    TYPE2=std    # type2 option     : std gam ncl gpu (for gpu, use 5.4.4)
+    OPT=3    # optimization option: 2 3 (2 stable; 3 slightly faster than 2)
+    COMPILER=2020  # select intel compiler: 2020 or 2018
+    if [ $COMPILER -eq 2020 ] ; then
+        IMPIVER=2019.7.217
+    elif [ $COMPILER -eq 2018 ] ; then
+        IMPIVER=2018.3.222
+    fi
+
+    # other parameters, no need to chage
+    VASPHOME=/data/software/vasp/compile/
+    LOG_FILE=run.log                              # name of the log file
+
+    # load enviromental parameters node3
+    source /data/opt/intel$COMPILER/compilers_and_libraries/linux/bin/compilervars.sh intel64
+    export LD_LIBRARY_PATH=/data/opt/intel$COMPILER/mkl/lib/intel64:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/data/opt/intel$COMPILER/lib/intel64:$LD_LIBRARY_PATH
+    source /data/opt/intel$COMPILER/impi/$IMPIVER/intel64/bin/mpivars.sh
+
+    # load enviromental parameters node10
+    #source /public/opt/intel$COMPILER/compilers_and_libraries/linux/bin/compilervars.sh intel64
+    #export LD_LIBRARY_PATH=/public/opt/intel$COMPILER/mkl/lib/intel64:$LD_LIBRARY_PATH
+    #export LD_LIBRARY_PATH=/public/opt/intel$COMPILER/lib/intel64:$LD_LIBRARY_PATH
+    #source /public/opt/intel$COMPILER/impi/$IMPIVER/intel64/bin/mpivars.sh
+   
+    # load enviromental parameters node50
+    #source /public/opt/intel$COMPILER/compilers_and_libraries/linux/bin/compilervars.sh intel64
+    #export LD_LIBRARY_PATH=/public/opt/intel$COMPILER/mkl/lib/intel64:$LD_LIBRARY_PATH
+    #export LD_LIBRARY_PATH=/public/opt/intel$COMPILER/lib/intel64:$LD_LIBRARY_PATH
+    #source /public/opt/intel$COMPILER/impi/$IMPIVER/intel64/bin/mpivars.sh
+
+
+
+
+  # gen list file to bind cores
+
+    mpirun $VASPHOME$VER\_$COMPILER/vasp.$VER\_$TYPE1\_O$OPT/bin/vasp_$TYPE2 > $LOG_FILE 2>&1
+    #$VASPHOME$VER/vasp.$VER\_$TYPE1\_O$OPT/bin/vasp_$TYPE2 > $LOG_FILE 2>&1
+    rm REPORT CHG* DOSCAR EIGENVAL IBZKPT PCDAT WAVECAR XDATCAR vasprun.xml
+
+    echo "run complete on `hostname`: `date` `pwd` " >> ~/job.log
+    grep CPU OUTCAR >> $LOG_FILE
+    echo "$folder task has been done! Good luck! " >> $PBS_O_WORKDIR/Sum_info_$PBS_JOBID
+    grep CPU OUTCAR >> $PBS_O_WORKDIR/Sum_info_$PBS_JOBID
+  else
+    echo "$folder is not a folder!" >> $PBS_O_WORKDIR/Sum_info_$PBS_JOBID
+  fi
+done
+
